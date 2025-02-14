@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Quote Mashup</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            text-align: center;
+        }
+        h1 {
+            color: #444;
+        }
+        .quote {
+            font-style: italic;
+            margin: 20px 0;
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .feedback {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        .correct {
+            color: green;
+        }
+        .incorrect {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Movie Quote Mashup</h1>
+        <p class="quote" id="quoteMashup">Loading quotes...</p>
+        <p>Can you guess the two movies?</p>
+        <form id="guessForm">
+            <input type="text" id="guess1" placeholder="Guess Movie 1" required>
+            <input type="text" id="guess2" placeholder="Guess Movie 2" required>
+            <button type="submit">Submit</button>
+        </form>
+        <button id="newQuotes">New Quotes</button>
+        <div class="feedback" id="feedback"></div>
+    </div>
+
+    <script>
+        const movieQuotes = [
+			
+            { text: "May the Force be with you.", movie: "Star Wars" },
+            { text: "I'm gonna make him an offer he can't refuse.", movie: "The Godfather" },
+            { text: "You talking to me?", movie: "Taxi Driver" },
+            { text: "Here's looking at you, kid.", movie: "Casablanca" },
+            { text: "I'll be back.", movie: "The Terminator" },
+            { text: "Hasta la vista, baby.", movie: "Terminator 2: Judgment Day" },
+            { text: "Say hello to my little friend!", movie: "Scarface" },
+            { text: "I see dead people.", movie: "The Sixth Sense" },
+            { text: "Houston, we have a problem.", movie: "Apollo 13" },
+            { text: "Keep your friends close, but your enemies closer.", movie: "The Godfather Part II" },
+            { text: "You can't handle the truth!", movie: "A Few Good Men" },
+            { text: "I'm the king of the world!", movie: "Titanic" },
+            { text: "Carpe diem. Seize the day, boys.", movie: "Dead Poets Society" },
+            { text: "Elementary, my dear Watson.", movie: "The Adventures of Sherlock Holmes" },
+            { text: "To infinity and beyond!", movie: "Toy Story" },
+            { text: "Frankly, my dear, I don't give a damn.", movie: "Gone with the Wind" },
+            { text: "Bond. James Bond.", movie: "Dr. No" },
+            { text: "Life is like a box of chocolates.", movie: "Forrest Gump" },
+            { text: "You had me at hello.", movie: "Jerry Maguire" },
+            { text: "E.T. phone home.", movie: "E.T. the Extra-Terrestrial" },
+            // Add more quotes as needed, up to 100
+        ];
+
+        function getRandomQuote() {
+            const index = Math.floor(Math.random() * movieQuotes.length);
+            return movieQuotes[index];
+        }
+
+        function setNewQuotes() {
+            const feedback = document.getElementById("feedback");
+            const quoteElement = document.getElementById("quoteMashup");
+            feedback.innerHTML = ""; // Clear feedback
+            document.getElementById("guess1").value = ""; // Clear input boxes
+            document.getElementById("guess2").value = "";
+
+            const quote1 = getRandomQuote();
+            const quote2 = getRandomQuote();
+
+            while (quote1.movie === quote2.movie) {
+                quote2 = getRandomQuote(); // Ensure two different movies
+            }
+
+            quoteElement.textContent = `"${quote1.text}... ${quote2.text}"`;
+            correctAnswers = [quote1.movie, quote2.movie];
+        }
+
+        document.getElementById("guessForm").addEventListener("submit", function (event) {
+            event.preventDefault(); // Prevent form from refreshing the page
+            const guess1 = document.getElementById("guess1").value.trim();
+            const guess2 = document.getElementById("guess2").value.trim();
+            const feedback = document.getElementById("feedback");
+            feedback.innerHTML = ""; // Clear previous feedback
+
+            let feedback1 = "", feedback2 = "";
+
+            if (guess1.toLowerCase() === correctAnswers[0].toLowerCase() || guess1.toLowerCase() === correctAnswers[1].toLowerCase()) {
+                feedback1 = `<p class="correct">Guess 1: ${guess1} ✔️</p>`;
+            } else {
+                feedback1 = `<p class="incorrect">Guess 1: ${guess1} ❌</p>`;
+            }
+
+            if (guess2.toLowerCase() === correctAnswers[0].toLowerCase() || guess2.toLowerCase() === correctAnswers[1].toLowerCase()) {
+                feedback2 = `<p class="correct">Guess 2: ${guess2} ✔️</p>`;
+            } else {
+                feedback2 = `<p class="incorrect">Guess 2: ${guess2} ❌</p>`;
+            }
+
+            feedback.innerHTML = feedback1 + feedback2;
+
+            // Final check if both are correct
+            if (
+                (guess1.toLowerCase() === correctAnswers[0].toLowerCase() && guess2.toLowerCase() === correctAnswers[1].toLowerCase()) ||
+                (guess1.toLowerCase() === correctAnswers[1].toLowerCase() && guess2.toLowerCase() === correctAnswers[0].toLowerCase())
+            ) {
+                feedback.innerHTML += `<p class="correct">🎉 Correct! You guessed both movies!</p>`;
+            } else {
+                feedback.innerHTML += `<p class="incorrect">❌ Some answers are incorrect. Try again!</p>`;
+            }
+        });
+
+        document.getElementById("newQuotes").addEventListener("click", setNewQuotes);
+
+        // Initialize with random quotes
+        setNewQuotes();
+    </script>
+</body>
+</html>
